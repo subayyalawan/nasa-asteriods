@@ -1,0 +1,25 @@
+.errorMsg{
+    animation: errorMsg 3s ease-in-out forwards;
+}
+
+@keyframes errorMsg {
+    0%{
+     transform: translateX(320px);  
+     opacity: 1; 
+    }
+
+    30%{
+        transform: translateX(0px);
+        opacity: 1;
+    }
+
+    90%{
+        transform: translateX(0px);
+        opacity: 1;
+    }
+
+    100%{
+        opacity: 0;
+        transform: translateX(320px);
+    }
+}
