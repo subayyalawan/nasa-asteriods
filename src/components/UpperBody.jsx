@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { get } from "./Api";
-import Loader from "../assets/loader.gif"
+import Loader from "../assets/loader.gif";
+import AsteriodsData from "./AsteriodsData";
 
 const Body = () => {
   const [date, setDate] = useState({
@@ -10,10 +11,9 @@ const Body = () => {
     EndDate: "",
   });
   const [validDateErr, setValidDateError] = useState(false);
-  const [apiData, setApiData] = useState([])
-  const [apiError, setApiError] = useState("")
+  const [apiData, setApiData] = useState([]);
+  const [apiError, setApiError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
 
   const validDateRange = () => {
     if (date.StartDate && date.EndDate) {
@@ -23,33 +23,32 @@ const Body = () => {
       const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
       if (daysDifference <= 7) {
         setValidDateError(false);
-        setIsLoading(true)
-        fetchApiData()
+        setIsLoading(true);
+        fetchApiData();
       } else {
         setValidDateError(true);
       }
     }
   };
 
-  const fetchApiData = async() =>{
-    try{
-      const resp = await get(`start_date=${date.StartDate}&end_date=${date.EndDate}&api_key=LUBRc5fkhGMCDFt1fkCrDBdSdspPwoWlZeGHXfru`)
-      
+  const fetchApiData = async () => {
+    try {
+      const resp = await get(
+        `start_date=${date.StartDate}&end_date=${date.EndDate}&api_key=LUBRc5fkhGMCDFt1fkCrDBdSdspPwoWlZeGHXfru`
+      );
+
       const combinedData = Object.keys(resp.data.near_earth_objects).reduce(
         (acc, dateKey) => [...acc, ...resp.data.near_earth_objects[dateKey]],
         []
       );
-
-      console.log(combinedData)
-
-      setApiData(resp.data.near_earth_objects)
-      setIsLoading(false)
-      console.log(apiData)
+      setApiData(combinedData);
+      setIsLoading(false);
+      console.log(apiData);
+      // console.log(resp.data.near_earth_objects)
+    } catch (error) {
+      setApiError(error.message);
     }
-    catch(error){
-      setApiError(error.message)
-    }
-  }
+  };
 
   useEffect(() => {
     validDateRange();
@@ -58,10 +57,9 @@ const Body = () => {
     }, 3200);
   }, [date.StartDate, date.EndDate]);
 
-
-  const handleFormSubmit = (e)=>{
+  const handleFormSubmit = (e) => {
     e.preventDefault();
-  }
+  };
 
   return (
     <>
@@ -73,7 +71,10 @@ const Body = () => {
 
           <form className="flex" onSubmit={handleFormSubmit}>
             <div className="pl-2">
-              <label htmlFor="asteriod-id" className="capitalize block text-gray-500 px-2 text-base font-semibold">
+              <label
+                htmlFor="asteriod-id"
+                className="capitalize block text-gray-500 px-2 text-base font-semibold"
+              >
                 Enter Asteriod Id
               </label>
               <input
@@ -84,7 +85,10 @@ const Body = () => {
             </div>
 
             <div className="pl-2">
-              <label htmlFor="start-date" className="capitalize block text-gray-500 px-2 text-base font-semibold">
+              <label
+                htmlFor="start-date"
+                className="capitalize block text-gray-500 px-2 text-base font-semibold"
+              >
                 Start Date
               </label>
               <input
@@ -99,7 +103,10 @@ const Body = () => {
             </div>
 
             <div className="pl-2">
-              <label htmlFor="end-date" className="capitalize block text-gray-500 px-2 text-base font-semibold">
+              <label
+                htmlFor="end-date"
+                className="capitalize block text-gray-500 px-2 text-base font-semibold"
+              >
                 Start Date
               </label>
               <input
@@ -128,12 +135,18 @@ const Body = () => {
           ) : null}
 
           <div>
-            {isLoading? (
+            {isLoading ? (
               <div className="fixed top-0 right-0 w-full h-screen bg-transparent-black flex items-center justify-center">
-                <img src={Loader} alt="Loading"/>
+                <img src={Loader} alt="Loading" />
               </div>
-            ):null}
+            ) : null}
           </div>
+        </div>
+
+        <div>
+          {isLoading ? null : date.StartDate && date.EndDate ? (
+            <AsteriodsData date={date} apiError={apiError} />
+          ) : null}
         </div>
       </div>
     </>
