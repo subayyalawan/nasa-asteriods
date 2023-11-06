@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { get } from "./Api";
 import Loader from "../assets/loader.gif";
 import AsteriodsData from "./AsteriodsData";
+import Favourite from "./Favourite";
 
 const Body = () => {
   const [date, setDate] = useState({
@@ -63,7 +64,8 @@ const Body = () => {
 
   return (
     <>
-      <div className="MainBody mt-16 px-8">
+      <div className="MainBody pt-[68px] pb-4 px-8">
+        {/* For Upper Body with date selector */}
         <div className="upperBody flex justify-between items-center py-5">
           <h2 className="text-2xl font-semibold text-gray-500">
             Search Nearest Asteriods
@@ -120,6 +122,7 @@ const Body = () => {
           </form>
         </div>
 
+        {/* For error in date validation */}
         <div>
           {validDateErr ? (
             <div className="errorMsg py-4 px-2 fixed -right-0 top-12 bg-transparent-red-600 hover:bg-red-600 text-white w-80 flex items-center justify-between">
@@ -133,20 +136,27 @@ const Body = () => {
               </div>
             </div>
           ) : null}
-
-          <div>
-            {isLoading ? (
-              <div className="fixed top-0 right-0 w-full h-screen bg-transparent-black flex items-center justify-center">
-                <img src={Loader} alt="Loading" />
-              </div>
-            ) : null}
-          </div>
         </div>
 
+        {/* For api data fetching loader */}
         <div>
-          {isLoading ? null : date.StartDate && date.EndDate ? (
+          {isLoading ? (
+            <div className="fixed top-0 right-0 w-full h-screen bg-transparent-black flex items-center justify-center">
+              <img src={Loader} alt="Loading" className="w-1/12" />
+            </div>
+          ) : null}
+        </div>
+
+        {/* to show API data on the page */}
+        <div>
+          {isLoading ? null : validDateErr ? (
             <AsteriodsData date={date} apiError={apiError} />
           ) : null}
+        </div>
+
+        {/* to add favourite asteriods */}
+        <div>
+          <Favourite />
         </div>
       </div>
     </>

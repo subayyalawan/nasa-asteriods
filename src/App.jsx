@@ -1,14 +1,15 @@
 import React from "react";
 import Navbar from "./components/Navbar";
-import Body from "./components/UpperBody";
-import './App.css';
+import UpperBody from "./components/UpperBody";
+import "./App.css";
+import Favourite from "./components/Favourite";
 
 function App() {
   return (
     <>
+      <Navbar />
       <div className="bg-gray-50 h-screen">
-        <Navbar />
-        <Body/>
+        <UpperBody />
       </div>
     </>
   );
