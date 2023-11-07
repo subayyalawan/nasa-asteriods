@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { get } from "./Api";
+// import { get } from "./Api";
 import Loader from "../assets/loader.gif";
 import AsteriodsData from "./AsteriodsData";
 import Favourite from "./Favourite";
+import axios from "axios";
 
 const Body = () => {
   const [date, setDate] = useState({
@@ -15,6 +16,7 @@ const Body = () => {
   const [apiData, setApiData] = useState([]);
   const [apiError, setApiError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showData, setShowData] = useState(false);
 
   const validDateRange = () => {
     if (date.StartDate && date.EndDate) {
@@ -26,28 +28,32 @@ const Body = () => {
         setValidDateError(false);
         setIsLoading(true);
         fetchApiData();
+        setShowData(false);
       } else {
         setValidDateError(true);
+        setShowData(false);
       }
     }
   };
 
   const fetchApiData = async () => {
     try {
-      const resp = await get(
-        `start_date=${date.StartDate}&end_date=${date.EndDate}&api_key=LUBRc5fkhGMCDFt1fkCrDBdSdspPwoWlZeGHXfru`
+      const resp = await axios.get(
+        `https://api.nasa.gov/neo/rest/v1/feed?start_date=${date.StartDate}&end_date=${date.EndDate}&api_key=LUBRc5fkhGMCDFt1fkCrDBdSdspPwoWlZeGHXfru`
+        // `start_date=2023-10-03&end_date=2023-10-04&api_key=LUBRc5fkhGMCDFt1fkCrDBdSdspPwoWlZeGHXfru`
       );
 
-      const combinedData = Object.keys(resp.data.near_earth_objects).reduce(
-        (acc, dateKey) => [...acc, ...resp.data.near_earth_objects[dateKey]],
-        []
-      );
-      setApiData(combinedData);
+      // const combinedData = Object.keys(resp.data.near_earth_objects).reduce(
+      //   (acc, dateKey) => [...acc, ...resp.data.near_earth_objects[dateKey]],
+      //   []
+      // );
+
+      setApiData(resp.data.near_earth_objects);
       setIsLoading(false);
-      console.log(apiData);
-      // console.log(resp.data.near_earth_objects)
+      setShowData(true);
     } catch (error) {
-      setApiError(error.message);
+      setApiError(error.error_message);
+      setShowData(false);
     }
   };
 
@@ -58,10 +64,6 @@ const Body = () => {
     }, 3200);
   }, [date.StartDate, date.EndDate]);
 
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-  };
-
   return (
     <>
       <div className="MainBody pt-[68px] pb-4 px-8">
@@ -71,7 +73,7 @@ const Body = () => {
             Search Nearest Asteriods
           </h2>
 
-          <form className="flex" onSubmit={handleFormSubmit}>
+          <form className="flex" onSubmit={(e) => e.preventDefault()}>
             <div className="pl-2">
               <label
                 htmlFor="asteriod-id"
@@ -149,8 +151,8 @@ const Body = () => {
 
         {/* to show API data on the page */}
         <div>
-          {isLoading ? null : validDateErr ? (
-            <AsteriodsData date={date} apiError={apiError} />
+          {showData ? (
+            <AsteriodsData apiError={apiError} apiData={apiData} />
           ) : null}
         </div>
 

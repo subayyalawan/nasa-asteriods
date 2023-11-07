@@ -1,6 +1,9 @@
 import React from "react";
+import AsteriodDataCard from "./AsteriodDataCard";
 
 const AsteriodsData = (props) => {
+  console.log(props.apiData)
+
   return (
     <>
       {props.apiError ? (
@@ -35,6 +38,21 @@ const AsteriodsData = (props) => {
               <li className="w-2/12 px-1 text-center">Add To Favourite</li>
             </ul>
           </div>
+
+          {/* {props.apiData.map((data, index)=>{
+            <AsteriodDataCard
+              key={index}
+              id={data.id}
+              name={data.name}
+              closest_approach = {data.close_approach_data.close_approach_data}
+              time={data.close_approach_date_full}
+              ab_magnitude = {data.absolute_magnitude_h}
+              min_diameter={data.estimated_diameter.kilometers.estimated_diameter_min}
+              max_diameter={data.estimated_diameter.kilometers.estimated_diameter_max}
+              rel_velocity={data.close_approach_data.relative_velocity.kilometers_per_second}
+              hazard={data.is_potentially_hazardous_asteroid}
+            />
+          })} */}
         </>
       )}
     </>
