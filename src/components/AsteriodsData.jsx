@@ -2,6 +2,7 @@ import React from "react";
 import AsteriodDataCard from "./AsteriodDataCard";
 
 const AsteriodsData = (props) => {
+  // console.log(props.apiData[0].is_potentially_hazardous_asteroid)
   console.log(props.apiData)
 
   return (
@@ -31,7 +32,7 @@ const AsteriodsData = (props) => {
                 <select name="velocity" className="p-1 ml-3">
                   <option value="km/s">KM/sec</option>
                   <option value="km/h">KM/Hour</option>
-                  <option value="m/h">Miles/Hours</option>
+                  <option value="miles/h">Miles/Hours</option>
                 </select>
               </li>
               <li className="w-1/12 px-1 text-center">Hazard</li>
@@ -40,19 +41,23 @@ const AsteriodsData = (props) => {
           </div>
 
           {/* {props.apiData.map((data, index)=>{
-            <AsteriodDataCard
+
+          })} */}
+
+          {props.apiData.map((data, index)=>{
+            return (<AsteriodDataCard
               key={index}
               id={data.id}
               name={data.name}
-              closest_approach = {data.close_approach_data.close_approach_data}
-              time={data.close_approach_date_full}
-              ab_magnitude = {data.absolute_magnitude_h}
-              min_diameter={data.estimated_diameter.kilometers.estimated_diameter_min}
-              max_diameter={data.estimated_diameter.kilometers.estimated_diameter_max}
-              rel_velocity={data.close_approach_data.relative_velocity.kilometers_per_second}
+              date={data.close_approach_data[0].close_approach_date}
+              time={data.close_approach_data[0].close_approach_date_full}
+              ab_magnitude={data.absolute_magnitude_h}
+              max_diameter = {data.estimated_diameter.kilometers.estimated_diameter_max}
+              min_diameter = {data.estimated_diameter.kilometers.estimated_diameter_min}
+              rel_velocity={data.close_approach_data[0].relative_velocity.kilometers_per_second}
               hazard={data.is_potentially_hazardous_asteroid}
-            />
-          })} */}
+            />)
+          })}
         </>
       )}
     </>

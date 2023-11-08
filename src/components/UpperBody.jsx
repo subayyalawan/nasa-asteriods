@@ -17,6 +17,8 @@ const Body = () => {
   const [apiError, setApiError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showData, setShowData] = useState(false);
+  const [isFav, setIsFav] = useState(false)
+
 
   const validDateRange = () => {
     if (date.StartDate && date.EndDate) {
@@ -43,12 +45,13 @@ const Body = () => {
         // `start_date=2023-10-03&end_date=2023-10-04&api_key=LUBRc5fkhGMCDFt1fkCrDBdSdspPwoWlZeGHXfru`
       );
 
-      // const combinedData = Object.keys(resp.data.near_earth_objects).reduce(
-      //   (acc, dateKey) => [...acc, ...resp.data.near_earth_objects[dateKey]],
-      //   []
-      // );
+      const combinedData = Object.keys(resp.data.near_earth_objects).reduce(
+        (acc, dateKey) => [...acc, ...resp.data.near_earth_objects[dateKey]],
+        []
+      );
 
-      setApiData(resp.data.near_earth_objects);
+      // setApiData(resp.data.near_earth_objects);
+      setApiData(combinedData)
       setIsLoading(false);
       setShowData(true);
     } catch (error) {
@@ -152,7 +155,7 @@ const Body = () => {
         {/* to show API data on the page */}
         <div>
           {showData ? (
-            <AsteriodsData apiError={apiError} apiData={apiData} />
+            <AsteriodsData apiError={apiError} apiData={apiData} isFav />
           ) : null}
         </div>
 
