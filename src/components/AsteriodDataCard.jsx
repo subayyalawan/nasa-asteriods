@@ -15,7 +15,7 @@ const AsteriodDataCard = (props) => {
           {props.max_diameter} - {props.min_diameter}
         </li>
         <li className="w-2/12 px-3">{props.rel_velocity}</li>
-        <li className="w-1/12 px-1 text-center">{props.hazard? "oy" : "bello" }</li>
+        <li className="w-1/12 px-1 text-center">{props.hazard? "Yes" : "No" }</li>
         <li className="w-2/12 px-1 text-center">Add to fav</li>
       </ul>
     </div>
