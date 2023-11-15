@@ -1,6 +1,20 @@
-import React from "react";
+import React, {useState} from "react";
+import { faHeart as heartRegular} from "@fortawesome/free-regular-svg-icons";
+import { faHeart as heartSolid } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 
 const AsteriodDataCard = (props) => {
+
+  const [isFav, setIsFav] = useState(false)
+  console.log(props.isFav)
+
+  const setFavAsteriods = () => {
+    setIsFav((isFav) => !isFav)
+  }
+  // const handleEditBtn = () => {
+  //   setIsEditing((isEditing) => !isEditing);
+  // };
 //   console.log(props);
 
   return (
@@ -16,7 +30,7 @@ const AsteriodDataCard = (props) => {
         </li>
         <li className="w-2/12 px-3">{props.rel_velocity}</li>
         <li className="w-1/12 px-1 text-center">{props.hazard? "Yes" : "No" }</li>
-        <li className="w-2/12 px-1 text-center">Add to fav</li>
+        <li className="w-2/12 px-1 flex items-center justify-center" onClick={setFavAsteriods}><FontAwesomeIcon className="text-xl text-gray-800" icon={isFav? heartSolid : heartRegular} /></li>
       </ul>
     </div>
   );
