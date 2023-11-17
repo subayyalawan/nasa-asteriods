@@ -17,7 +17,9 @@ const Body = () => {
   const [apiError, setApiError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showData, setShowData] = useState(false);
-  // const [isFav, setIsFav] = useState(false)
+
+  const [favApiData, setFavApiData] = useState([]);
+  const [clickedData, setClickedData] = useState([]);
 
   const validDateRange = () => {
     if (date.StartDate && date.EndDate) {
@@ -50,8 +52,8 @@ const Body = () => {
       );
 
       // setApiData(resp.data.near_earth_objects);
+      // console.log(resp.data);
       setApiData(combinedData);
-      console.log(apiData.length);
       setIsLoading(false);
       setShowData(true);
     } catch (error) {
@@ -60,8 +62,6 @@ const Body = () => {
     }
   };
 
-  const handleFav = () => {};
-
   useEffect(() => {
     validDateRange();
     setTimeout(() => {
@@ -69,9 +69,50 @@ const Body = () => {
     }, 3200);
   }, [date.StartDate, date.EndDate]);
 
+  const favApiFetch = async () => {
+    try {
+      const resp = await axios.get("http://localhost:3500/clickedData");
+      setFavApiData(resp.data);
+      // console.log(favApiData);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const addFavAsteriod = async (dataID) => {
+    try {
+      const apiDataMatching = favApiData.find((data) => data.id === dataID);
+
+      if (apiDataMatching) {
+        // console.log("Item is present, remove it:", apiDataMatching);
+        await axios.delete(`http://localhost:3500/clickedData/${dataID}`);
+      } else {
+        // console.log("Item is not present, add it:", dataID);
+        await axios.post("http://localhost:3500/clickedData", {
+          ...clickedData,
+          id:clickedData.id
+        });
+        // console.log(clickedData)
+      }
+      favApiFetch();
+      // console.log(favApiData);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
+  // to detect which data has been added to favorites
+  const handleFav = (dataID) => {
+    const favAsteriod = apiData.find((data) => data.id === dataID);
+    setClickedData(favAsteriod);
+    // console.log(clickedData.id);
+    favApiFetch();
+    addFavAsteriod(dataID);
+  };
+
   return (
     <>
-      <div className="MainBody pt-[68px] pb-4 px-8">
+      <div className="MainBody pt-[68px] px-8">
         {/* For Upper Body with date selector */}
         <div className="upperBody flex justify-between items-center py-5">
           <h2 className="text-2xl font-semibold text-gray-500 capitalize">
@@ -160,13 +201,13 @@ const Body = () => {
         <div>
           {showData ? (
             <>
-              {props.apiError ? (
+              {apiError ? (
                 <h2 className="text-2xl font-semibold text-gray-500 text-center">
-                  {props.apiError}
+                  {apiError}
                 </h2>
               ) : (
-                <div>
-                  <div className="dataHead py-5">
+                <div className="py-5">
+                  <div className="dataHead">
                     <ul className="flex justify-center items-center text-gray-500  text-sm font-semibold">
                       <li className="w-1/12 px-3">ID</li>
                       <li className="w-1/12 px-1">Name</li>
@@ -197,7 +238,7 @@ const Body = () => {
                     </ul>
                   </div>
 
-                  {props.apiData.map((data, index) => {
+                  {apiData.map((data, index) => {
                     return (
                       <AsteriodDataCard
                         key={index}
@@ -221,6 +262,7 @@ const Body = () => {
                             .kilometers_per_second
                         }
                         hazard={data.is_potentially_hazardous_asteroid}
+                        onFav={() => handleFav(data.id)}
                       />
                     );
                   })}
@@ -232,7 +274,7 @@ const Body = () => {
 
         {/* to add favourite asteriods */}
         <div>
-          <Favourite />
+          <Favourite favApiData={favApiData} hello="hello"/>
         </div>
       </div>
     </>

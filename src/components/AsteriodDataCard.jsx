@@ -7,10 +7,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const AsteriodDataCard = (props) => {
 
   const [isFav, setIsFav] = useState(false)
-  console.log(props.isFav)
+  // console.log(props.isFav)
 
   const setFavAsteriods = () => {
     setIsFav((isFav) => !isFav)
+    props.onFav()
   }
   // const handleEditBtn = () => {
   //   setIsEditing((isEditing) => !isEditing);
@@ -19,7 +20,8 @@ const AsteriodDataCard = (props) => {
 
   return (
     <div className="AsteriodsDataCard py-1">
-      <ul className="flex justify-between py-3 bg-white hover:bg-blue-300 text-sm font-normal text-gray-800 border-gray-800 shadow-sm">
+      <ul className="flex justify-between py-3 bg-white hover:bg-blue-300 text-sm font-normal text-gray-800 border-gray-800 border border-opacity-30
+       shadow-sm">
         <li className="w-1/12 px-3">{props.id}</li>
         <li className="w-1/12 px-1">{props.name}</li>
         <li className="w-1/12 px-1">{props.date}</li>
