@@ -19,7 +19,10 @@ const Body = () => {
   const [showData, setShowData] = useState(false);
 
   const [favApiData, setFavApiData] = useState([]);
-  const [clickedData, setClickedData] = useState([]);
+  const [favorites, setFavorites] = useState([]);
+
+  const [diamater, setDiameter] = useState("km")
+  const [velocity, setVelocity] = useState("km/s")
 
   const validDateRange = () => {
     if (date.StartDate && date.EndDate) {
@@ -63,6 +66,7 @@ const Body = () => {
   };
 
   useEffect(() => {
+    favApiFetch();
     validDateRange();
     setTimeout(() => {
       setValidDateError(false);
@@ -71,7 +75,7 @@ const Body = () => {
 
   const favApiFetch = async () => {
     try {
-      const resp = await axios.get("http://localhost:3500/clickedData");
+      const resp = await axios.get("http://localhost:3500/subayyal");
       setFavApiData(resp.data);
       // console.log(favApiData);
     } catch (error) {
@@ -80,34 +84,16 @@ const Body = () => {
   };
 
   const addFavAsteriod = async (dataID) => {
-    try {
-      const apiDataMatching = favApiData.find((data) => data.id === dataID);
-
-      if (apiDataMatching) {
-        // console.log("Item is present, remove it:", apiDataMatching);
-        await axios.delete(`http://localhost:3500/clickedData/${dataID}`);
-      } else {
-        // console.log("Item is not present, add it:", dataID);
-        await axios.post("http://localhost:3500/clickedData", {
-          ...clickedData,
-          id:clickedData.id
-        });
-        // console.log(clickedData)
-      }
-      favApiFetch();
-      // console.log(favApiData);
-    } catch (error) {
-      console.error("Error:", error);
-    }
+    const dataToAdd = apiData.find((data) => data.id === dataID);
+    await axios.post("http://localhost:3500/subayyal", dataToAdd);
+    favApiFetch();
+    setFavorites((prevFav) => [...prevFav, dataToAdd])
   };
 
-  // to detect which data has been added to favorites
-  const handleFav = (dataID) => {
-    const favAsteriod = apiData.find((data) => data.id === dataID);
-    setClickedData(favAsteriod);
-    // console.log(clickedData.id);
+  const removeFavAsteriod = async (dataID) => {
+    await axios.delete(`http://localhost:3500/subayyal/${dataID}`);
     favApiFetch();
-    addFavAsteriod(dataID);
+    setFavorites((prevFav)=> prevFav.filter((fav) => fav.id !== dataID))
   };
 
   return (
@@ -239,6 +225,10 @@ const Body = () => {
                   </div>
 
                   {apiData.map((data, index) => {
+                    const isFav = favorites.some((fav) => fav.id === data.id);
+                    {diamater == "km"? "hello":"world"}
+
+
                     return (
                       <AsteriodDataCard
                         key={index}
@@ -262,7 +252,9 @@ const Body = () => {
                             .kilometers_per_second
                         }
                         hazard={data.is_potentially_hazardous_asteroid}
-                        onFav={() => handleFav(data.id)}
+                        isFav={isFav}
+                        removeFavAsteriod={() => removeFavAsteriod(data.id)}
+                        addFavAsteriod={() => addFavAsteriod(data.id)}
                       />
                     );
                   })}
@@ -274,7 +266,50 @@ const Body = () => {
 
         {/* to add favourite asteriods */}
         <div>
-          <Favourite favApiData={favApiData} hello="hello"/>
+          <div className="py-4">
+            {favApiData && favApiData.length > 0 ? (
+              <>
+                <h2 className="text-2xl text-gray-500 font-semibold text-center">
+                  Favourite Asteriods
+                </h2>
+                <div className="fav-upper flex justify-center">
+                  <ul className="w-6/12 flex justify-between">
+                    <li className="w-4/12 px-3">ID</li>
+                    <li className="w-4/12 px-1">Name</li>
+                    <li className="text-center w-4/12 px-1">
+                      Remove From Favorite
+                    </li>
+                  </ul>
+                </div>
+                <div className="fav-lower">
+                  <div className="w-6/12 mx-auto">
+                    {favApiData.map((data, index) => {
+                      return (
+                        <Favourite
+                          key={data.id}
+                          id={data.id}
+                          name={data.name}
+                          removeFavAsteriod={() => removeFavAsteriod(data.id)}
+                        />
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            ) : (
+              // for when there is no data in the fav data
+              <div className="flex justify-center">
+                <h2 className="text-2xl text-gray-500 font-semibold">
+                  No Favourite Asteriods Found Yet
+                </h2>
+              </div>
+            )}
+          </div>
+
+          {/* <Favourite
+            favApiData={favApiData}
+            removeFavAsteriod={() => removeFavAsteriod()}
+          /> */}
         </div>
       </div>
     </>
