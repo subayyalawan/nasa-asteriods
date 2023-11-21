@@ -21,8 +21,11 @@ const Body = () => {
   const [favApiData, setFavApiData] = useState([]);
   const [favorites, setFavorites] = useState([]);
 
-  const [diamater, setDiameter] = useState("km")
-  const [velocity, setVelocity] = useState("km/s")
+  const [diamater, setDiameter] = useState("km");
+  const [velocity, setVelocity] = useState("km/s");
+
+  const [isSingleID, setIsSingleID] = useState(false);
+  const [singleID, seSingleID] = useState(false);
 
   const validDateRange = () => {
     if (date.StartDate && date.EndDate) {
@@ -54,8 +57,6 @@ const Body = () => {
         []
       );
 
-      // setApiData(resp.data.near_earth_objects);
-      // console.log(resp.data);
       setApiData(combinedData);
       setIsLoading(false);
       setShowData(true);
@@ -87,14 +88,16 @@ const Body = () => {
     const dataToAdd = apiData.find((data) => data.id === dataID);
     await axios.post("http://localhost:3500/subayyal", dataToAdd);
     favApiFetch();
-    setFavorites((prevFav) => [...prevFav, dataToAdd])
+    setFavorites((prevFav) => [...prevFav, dataToAdd]);
   };
 
   const removeFavAsteriod = async (dataID) => {
     await axios.delete(`http://localhost:3500/subayyal/${dataID}`);
     favApiFetch();
-    setFavorites((prevFav)=> prevFav.filter((fav) => fav.id !== dataID))
+    setFavorites((prevFav) => prevFav.filter((fav) => fav.id !== dataID));
   };
+
+  const makeSingleId = () => {};
 
   return (
     <>
@@ -185,83 +188,135 @@ const Body = () => {
 
         {/* to show API data on the page */}
         <div>
-          {showData ? (
+          {isSingleID ? (
+            <h1>Hello World</h1>
+          ) : (
             <>
-              {apiError ? (
-                <h2 className="text-2xl font-semibold text-gray-500 text-center">
-                  {apiError}
-                </h2>
-              ) : (
-                <div className="py-5">
-                  <div className="dataHead">
-                    <ul className="flex justify-center items-center text-gray-500  text-sm font-semibold">
-                      <li className="w-1/12 px-3">ID</li>
-                      <li className="w-1/12 px-1">Name</li>
-                      <li className="w-1/12 px-1">Date</li>
-                      <li className="w-1/12 px-1">Time</li>
-                      <li className="w-2/12 px-1">Ab Magnitude</li>
-                      <li className="w-2/12 px-2 flex justify-start items-center">
-                        <p>Min - Max Est Diamater</p>
-                        <select name="diameter" className="p-1 ml-3">
-                          <option value="km">Kilo Meters</option>
-                          <option value="meters">Meters</option>
-                          <option value="miles">Miles</option>
-                          <option value="Feets">Feets</option>
-                        </select>
-                      </li>
-                      <li className="w-2/12 px-2 flex justify-start items-center">
-                        <p>Relative Velocity</p>
-                        <select name="velocity" className="p-1 ml-3">
-                          <option value="km/s">KM/sec</option>
-                          <option value="km/h">KM/Hour</option>
-                          <option value="miles/h">Miles/Hours</option>
-                        </select>
-                      </li>
-                      <li className="w-1/12 px-1 text-center">Hazard</li>
-                      <li className="w-2/12 px-1 text-center">
-                        Add To Favourite
-                      </li>
-                    </ul>
-                  </div>
+              {showData ? (
+                <>
+                  {apiError ? (
+                    <h2 className="text-2xl font-semibold text-gray-500 text-center">
+                      {apiError}
+                    </h2>
+                  ) : (
+                    <div className="py-5">
+                      <div className="dataHead">
+                        <ul className="flex justify-center items-center text-gray-500  text-sm font-semibold">
+                          <li className="w-1/12 px-3">ID</li>
+                          <li className="w-1/12 px-1">Name</li>
+                          <li className="w-1/12 px-1">Date</li>
+                          <li className="w-1/12 px-1">Time</li>
+                          <li className="w-2/12 px-1">Ab Magnitude</li>
+                          <li className="w-2/12 px-2 flex justify-start items-center">
+                            <p>Min - Max Est Diamater</p>
+                            <select
+                              name="diameter"
+                              value={diamater}
+                              onChange={(e) => setDiameter(e.target.value)}
+                              className="p-1 ml-3"
+                            >
+                              <option value="km">Kilo Meters</option>
+                              <option value="meters">Meters</option>
+                              <option value="miles">Miles</option>
+                              <option value="feet">Feets</option>
+                            </select>
+                          </li>
+                          <li className="w-2/12 px-2 flex justify-start items-center">
+                            <p>Relative Velocity</p>
+                            <select
+                              name="velocity"
+                              value={velocity}
+                              onChange={(e) => setVelocity(e.target.value)}
+                              className="p-1 ml-3"
+                            >
+                              <option value="km/s">KM/sec</option>
+                              <option value="km/h">KM/Hour</option>
+                              <option value="miles/h">Miles/Hours</option>
+                            </select>
+                          </li>
+                          <li className="w-1/12 px-1 text-center">Hazard</li>
+                          <li className="w-2/12 px-1 text-center">
+                            Add To Favourite
+                          </li>
+                        </ul>
+                      </div>
 
-                  {apiData.map((data, index) => {
-                    const isFav = favorites.some((fav) => fav.id === data.id);
-                    {diamater == "km"? "hello":"world"}
+                      {apiData.map((data, index) => {
+                        const isFav = favorites.some(
+                          (fav) => fav.id === data.id
+                        );
 
-
-                    return (
-                      <AsteriodDataCard
-                        key={index}
-                        id={data.id}
-                        name={data.name}
-                        date={data.close_approach_data[0].close_approach_date}
-                        time={
-                          data.close_approach_data[0].close_approach_date_full
-                        }
-                        ab_magnitude={data.absolute_magnitude_h}
-                        max_diameter={
-                          data.estimated_diameter.kilometers
-                            .estimated_diameter_max
-                        }
-                        min_diameter={
-                          data.estimated_diameter.kilometers
-                            .estimated_diameter_min
-                        }
-                        rel_velocity={
-                          data.close_approach_data[0].relative_velocity
-                            .kilometers_per_second
-                        }
-                        hazard={data.is_potentially_hazardous_asteroid}
-                        isFav={isFav}
-                        removeFavAsteriod={() => removeFavAsteriod(data.id)}
-                        addFavAsteriod={() => addFavAsteriod(data.id)}
-                      />
-                    );
-                  })}
-                </div>
-              )}
+                        return (
+                          <AsteriodDataCard
+                            key={index}
+                            id={data.id}
+                            name={data.name}
+                            date={
+                              data.close_approach_data[0].close_approach_date
+                            }
+                            time={
+                              data.close_approach_data[0]
+                                .close_approach_date_full
+                            }
+                            ab_magnitude={data.absolute_magnitude_h}
+                            max_diameter={
+                              diamater === "km"
+                                ? data.estimated_diameter.kilometers
+                                    .estimated_diameter_max
+                                : diamater === "meters"
+                                ? data.estimated_diameter.meters
+                                    .estimated_diameter_max
+                                : diamater === "miles"
+                                ? data.estimated_diameter.miles
+                                    .estimated_diameter_max
+                                : diamater === "feet"
+                                ? data.estimated_diameter.feet
+                                    .estimated_diameter_max
+                                : data.estimated_diameter.kilometers
+                                    .estimated_diameter_max
+                            }
+                            min_diameter={
+                              diamater === "km"
+                                ? data.estimated_diameter.kilometers
+                                    .estimated_diameter_min
+                                : diamater === "meters"
+                                ? data.estimated_diameter.meters
+                                    .estimated_diameter_min
+                                : diamater === "miles"
+                                ? data.estimated_diameter.miles
+                                    .estimated_diameter_min
+                                : diamater === "feet"
+                                ? data.estimated_diameter.feet
+                                    .estimated_diameter_min
+                                : data.estimated_diameter.kilometers
+                                    .estimated_diameter_min
+                            }
+                            rel_velocity={
+                              velocity === "km/s"
+                                ? data.close_approach_data[0].relative_velocity
+                                    .kilometers_per_second
+                                : velocity === "km/h"
+                                ? data.close_approach_data[0].relative_velocity
+                                    .kilometers_per_hour
+                                : velocity === "miles/h"
+                                ? data.close_approach_data[0].relative_velocity
+                                    .miles_per_hour
+                                : data.close_approach_data[0].relative_velocity
+                                    .kilometers_per_second
+                            }
+                            hazard={data.is_potentially_hazardous_asteroid}
+                            isFav={isFav}
+                            removeFavAsteriod={() => removeFavAsteriod(data.id)}
+                            addFavAsteriod={() => addFavAsteriod(data.id)}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
+              ) : null}
             </>
-          ) : null}
+          )}
         </div>
 
         {/* to add favourite asteriods */}

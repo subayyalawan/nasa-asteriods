@@ -22,9 +22,7 @@ const AsteriodDataCard = (props) => {
         <li className="w-1/12 px-1 text-center">
           {props.hazard ? "Yes" : "No"}
         </li>
-        <li
-          className="w-2/12 px-1 flex items-center justify-center"
-        >
+        <li className="w-2/12 px-1 flex items-center justify-center">
           {props.isFav ? (
             <FontAwesomeIcon
               icon={heartSolid}
