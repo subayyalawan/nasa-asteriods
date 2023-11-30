@@ -2,47 +2,47 @@
   "Subayyal": [
     {
       "links": {
-        "self": "http://api.nasa.gov/neo/rest/v1/neo/2219071?api_key=LUBRc5fkhGMCDFt1fkCrDBdSdspPwoWlZeGHXfru"
+        "self": "http://api.nasa.gov/neo/rest/v1/neo/2137052?api_key=LUBRc5fkhGMCDFt1fkCrDBdSdspPwoWlZeGHXfru"
       },
-      "id": "2219071",
-      "neo_reference_id": "2219071",
-      "name": "219071 (1997 US9)",
-      "nasa_jpl_url": "http://ssd.jpl.nasa.gov/sbdb.cgi?sstr=2219071",
-      "absolute_magnitude_h": 17.18,
+      "id": "2137052",
+      "neo_reference_id": "2137052",
+      "name": "137052 Tjelvar (1998 VO33)",
+      "nasa_jpl_url": "http://ssd.jpl.nasa.gov/sbdb.cgi?sstr=2137052",
+      "absolute_magnitude_h": 17.06,
       "estimated_diameter": {
         "kilometers": {
-          "estimated_diameter_min": 0.9739910734,
-          "estimated_diameter_max": 2.1779102496
+          "estimated_diameter_min": 1.0293308202,
+          "estimated_diameter_max": 2.3016536853
         },
         "meters": {
-          "estimated_diameter_min": 973.9910734139,
-          "estimated_diameter_max": 2177.9102496316
+          "estimated_diameter_min": 1029.3308202017,
+          "estimated_diameter_max": 2301.6536853065
         },
         "miles": {
-          "estimated_diameter_min": 0.6052098073,
-          "estimated_diameter_max": 1.3532902697
+          "estimated_diameter_min": 0.6395963211,
+          "estimated_diameter_max": 1.4301808521
         },
         "feet": {
-          "estimated_diameter_min": 3195.5088732994,
-          "estimated_diameter_max": 7145.3750634012
+          "estimated_diameter_min": 3377.0697281504,
+          "estimated_diameter_max": 7551.3574769011
         }
       },
       "is_potentially_hazardous_asteroid": false,
       "close_approach_data": [
         {
-          "close_approach_date": "2023-11-30",
-          "close_approach_date_full": "2023-Nov-30 17:33",
-          "epoch_date_close_approach": 1701365580000,
+          "close_approach_date": "2023-11-28",
+          "close_approach_date_full": "2023-Nov-28 21:02",
+          "epoch_date_close_approach": 1701205320000,
           "relative_velocity": {
-            "kilometers_per_second": "11.0875259229",
-            "kilometers_per_hour": "39915.0933224292",
-            "miles_per_hour": "24801.6867369283"
+            "kilometers_per_second": "41.6494727155",
+            "kilometers_per_hour": "149938.1017756834",
+            "miles_per_hour": "93165.7055172295"
           },
           "miss_distance": {
-            "astronomical": "0.3404043176",
-            "lunar": "132.4172795464",
-            "kilometers": "50923760.851763512",
-            "miles": "31642557.7083879856"
+            "astronomical": "0.3939495584",
+            "lunar": "153.2463782176",
+            "kilometers": "58934014.824080608",
+            "miles": "36619898.7244160704"
           },
           "orbiting_body": "Earth"
         }
@@ -51,47 +51,47 @@
     },
     {
       "links": {
-        "self": "http://api.nasa.gov/neo/rest/v1/neo/2480808?api_key=LUBRc5fkhGMCDFt1fkCrDBdSdspPwoWlZeGHXfru"
+        "self": "http://api.nasa.gov/neo/rest/v1/neo/3076899?api_key=LUBRc5fkhGMCDFt1fkCrDBdSdspPwoWlZeGHXfru"
       },
-      "id": "2480808",
-      "neo_reference_id": "2480808",
-      "name": "480808 (1994 XL1)",
-      "nasa_jpl_url": "http://ssd.jpl.nasa.gov/sbdb.cgi?sstr=2480808",
-      "absolute_magnitude_h": 20.65,
+      "id": "3076899",
+      "neo_reference_id": "3076899",
+      "name": "(2001 JW1)",
+      "nasa_jpl_url": "http://ssd.jpl.nasa.gov/sbdb.cgi?sstr=3076899",
+      "absolute_magnitude_h": 20.4,
       "estimated_diameter": {
         "kilometers": {
-          "estimated_diameter_min": 0.1970402621,
-          "estimated_diameter_max": 0.4405954204
+          "estimated_diameter_min": 0.2210828104,
+          "estimated_diameter_max": 0.4943561926
         },
         "meters": {
-          "estimated_diameter_min": 197.0402621378,
-          "estimated_diameter_max": 440.5954204445
+          "estimated_diameter_min": 221.0828103591,
+          "estimated_diameter_max": 494.3561926196
         },
         "miles": {
-          "estimated_diameter_min": 0.1224351047,
-          "estimated_diameter_max": 0.273773217
+          "estimated_diameter_min": 0.137374447,
+          "estimated_diameter_max": 0.3071786018
         },
         "feet": {
-          "estimated_diameter_min": 646.4575736321,
-          "estimated_diameter_max": 1445.523079211
+          "estimated_diameter_min": 725.3373275385,
+          "estimated_diameter_max": 1621.9035709942
         }
       },
-      "is_potentially_hazardous_asteroid": true,
+      "is_potentially_hazardous_asteroid": false,
       "close_approach_data": [
         {
-          "close_approach_date": "2023-11-30",
-          "close_approach_date_full": "2023-Nov-30 09:46",
-          "epoch_date_close_approach": 1701337560000,
+          "close_approach_date": "2023-11-28",
+          "close_approach_date_full": "2023-Nov-28 03:44",
+          "epoch_date_close_approach": 1701143040000,
           "relative_velocity": {
-            "kilometers_per_second": "28.5537551119",
-            "kilometers_per_hour": "102793.5184028785",
-            "miles_per_hour": "63871.894809833"
+            "kilometers_per_second": "20.0521326709",
+            "kilometers_per_hour": "72187.6776150744",
+            "miles_per_hour": "44854.6155714333"
           },
           "miss_distance": {
-            "astronomical": "0.4977144643",
-            "lunar": "193.6109266127",
-            "kilometers": "74457023.727471041",
-            "miles": "46265449.1868647258"
+            "astronomical": "0.3862900662",
+            "lunar": "150.2668357518",
+            "kilometers": "57788171.105678994",
+            "miles": "35907904.4534143572"
           },
           "orbiting_body": "Earth"
         }

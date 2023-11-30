@@ -38,6 +38,7 @@ const Body = () => {
         setIsLoading(true);
         fetchApiData();
         setShowData(false);
+        setIsSingleID(false);
       } else {
         setValidDateError(true);
         setShowData(false);
@@ -48,15 +49,16 @@ const Body = () => {
   const fetchApiData = async () => {
     try {
       const resp = await axios.get(
-        `https://api.nasa.gov/neo/rest/v1/feed?start_date=${date.StartDate}&end_date=${date.EndDate}&api_key=LUBRc5fkhGMCDFt1fkCrDBdSdspPwoWlZeGHXfru`
-        // `start_date=2023-10-03&end_date=2023-10-04&api_key=LUBRc5fkhGMCDFt1fkCrDBdSdspPwoWlZeGHXfru`
+        // `https://api.nasa.gov/neo/rest/v1/feed?start_date=${date.StartDate}&end_date=${date.EndDate}&api_key=LUBRc5fkhGMCDFt1fkCrDBdSdspPwoWlZeGHXfru`
+        `https://api.nasa.gov/neo/rest/v1/feed?start_date=${date.StartDate}&end_date=${date.EndDate}&api_key=5xlaqIKHGj8Ucgg98bDbkfP5vI5p7K5yhYqg0FfO`
       );
 
       const combinedData = Object.keys(resp.data.near_earth_objects).reduce(
         (acc, dateKey) => [...acc, ...resp.data.near_earth_objects[dateKey]],
         []
       );
-
+      // console.log(resp.data.near_earth_objects);
+      // console.log(combinedData);
       setApiData(combinedData);
       setIsLoading(false);
       setShowData(true);
@@ -101,21 +103,25 @@ const Body = () => {
     setIsSingleID(true);
     setIsLoading(true);
     fetchSingleIdData(dataID);
+    // setShowData(false);
   };
 
   const fetchSingleIdData = async (dataID) => {
     try {
       const resp = await axios.get(
-        `https://api.nasa.gov/neo/rest/v1/neo/${dataID}?api_key=LUBRc5fkhGMCDFt1fkCrDBdSdspPwoWlZeGHXfru`
+        // `https://api.nasa.gov/neo/rest/v1/neo/${dataID}?api_key=LUBRc5fkhGMCDFt1fkCrDBdSdspPwoWlZeGHXfru`
+        `https://api.nasa.gov/neo/rest/v1/neo/${dataID}?api_key=5xlaqIKHGj8Ucgg98bDbkfP5vI5p7K5yhYqg0FfO`
       );
+
       setSingleID(resp.data);
-      console.log(singleID)
+      // console.log(singleID.close_approach_data[0].relative_velocity.kilometers_per_second);
+      // console.log(singleID[0].close_approach_data);
       setIsLoading(false);
       setShowData(true);
     } catch (err) {
-      console.log(err);
+      console.log(err.error_message);
+      setShowData(false);
     }
-    // https://api.nasa.gov/neo/rest/v1/neo/browse?api_key=DEMO_KEY
   };
 
   return (
@@ -257,7 +263,60 @@ const Body = () => {
                   </div>
 
                   {isSingleID ? (
-                    <h1>Hello World</h1>
+                    <>
+                      {singleID.close_approach_data.map((data, index) => {
+                        const isFav = favorites.some(
+                          (fav) => fav.id === singleID.id
+                        );
+
+                        return (
+                          <AsteriodDataCard
+                            key={index}
+                            id={singleID.id}
+                            name={singleID.name}
+                            date={data.close_approach_date}
+                            time={data.close_approach_date_full}
+                            ab_magnitude={singleID.absolute_magnitude_h}
+                            max_diameter={
+                              diamater === "km"
+                                ? singleID.estimated_diameter.kilometers.estimated_diameter_max
+                                : diamater === "meters"
+                                ? singleID.estimated_diameter.meters.estimated_diameter_max
+                                : diamater === "miles"
+                                ? singleID.estimated_diameter.miles.estimated_diameter_max
+                                : diamater === "feet"
+                                ? singleID.estimated_diameter.feet.estimated_diameter_max
+                                : singleID.estimated_diameter.kilometers.estimated_diameter_max
+                            }
+                            min_diameter={
+                              diamater === "km"
+                                ? singleID.estimated_diameter.kilometers.estimated_diameter_min
+                                : diamater === "meters"
+                                ? singleID.estimated_diameter.meters.estimated_diameter_min
+                                : diamater === "miles"
+                                ? singleID.estimated_diameter.miles.estimated_diameter_min
+                                : diamater === "feet"
+                                ? singleID.estimated_diameter.feet.estimated_diameter_min
+                                : singleID.estimated_diameter.kilometers.estimated_diameter_min
+                            }
+                            rel_velocity={
+                              velocity === "km/s"
+                                ? data.relative_velocity.kilometers_per_second
+                                : velocity === "km/h"
+                                ? data.relative_velocity.kilometers_per_hour
+                                : velocity === "miles/h"
+                                ? data.relative_velocity.miles_per_hour
+                                : data.relative_velocity.kilometers_per_second
+                            }
+                            hazard={singleID.is_potentially_hazardous_asteroid}
+                            isFav={isFav}
+                            removeFavAsteriod={() => removeFavAsteriod(data.id)}
+                            addFavAsteriod={() => addFavAsteriod(data.id)}
+                            makeSingleId={() => makeSingleId(data.id)}
+                          />
+                        );
+                      })}
+                    </>
                   ) : (
                     <>
                       {apiData.map((data, index) => {
@@ -365,7 +424,7 @@ const Body = () => {
                           id={data.id}
                           name={data.name}
                           removeFavAsteriod={() => removeFavAsteriod(data.id)}
-                          makeSingleId={()=>makeSingleId (data.id)}
+                          makeSingleId={() => makeSingleId(data.id)}
                         />
                       );
                     })}
