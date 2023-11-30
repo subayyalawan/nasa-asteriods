@@ -23,3 +23,7 @@
         transform: translateX(320px);
     }
 }
+
+input{
+    outline: none !important;
+}

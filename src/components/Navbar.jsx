@@ -21,14 +21,14 @@ const Navbar = ({userName}) => {
         <div className="px-8 py-3 flex justify-between text-xl">
           <div className="navbar-logo">
             <h3 className="font-bold uppercase text-gray-900 cursor-pointer">
-              NASA ASTERIODS
+              NASA <span className="font-medium text-sm">(Asteriods)</span>
             </h3>
           </div>
 
           <div className="navbar-personal-info flex text-gray-500 text-base">
-            <p>Hello! {userName}</p>
+            <p className="cursor-pointer" >Hello! {userName}</p>
             <span className="px-4">|</span>
-            <p onClick={handleSignOut}>Logout</p>
+            <p onClick={handleSignOut} className="cursor-pointer">Logout</p>
           </div>
         </div>
       </div>

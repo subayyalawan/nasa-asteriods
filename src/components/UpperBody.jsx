@@ -25,7 +25,7 @@ const Body = () => {
   const [velocity, setVelocity] = useState("km/s");
 
   const [isSingleID, setIsSingleID] = useState(false);
-  const [singleID, seSingleID] = useState(false);
+  const [singleID, setSingleID] = useState([]);
 
   const validDateRange = () => {
     if (date.StartDate && date.EndDate) {
@@ -97,7 +97,26 @@ const Body = () => {
     setFavorites((prevFav) => prevFav.filter((fav) => fav.id !== dataID));
   };
 
-  const makeSingleId = () => {};
+  const makeSingleId = (dataID) => {
+    setIsSingleID(true);
+    setIsLoading(true);
+    fetchSingleIdData(dataID);
+  };
+
+  const fetchSingleIdData = async (dataID) => {
+    try {
+      const resp = await axios.get(
+        `https://api.nasa.gov/neo/rest/v1/neo/${dataID}?api_key=LUBRc5fkhGMCDFt1fkCrDBdSdspPwoWlZeGHXfru`
+      );
+      setSingleID(resp.data);
+      console.log(singleID)
+      setIsLoading(false);
+      setShowData(true);
+    } catch (err) {
+      console.log(err);
+    }
+    // https://api.nasa.gov/neo/rest/v1/neo/browse?api_key=DEMO_KEY
+  };
 
   return (
     <>
@@ -188,59 +207,59 @@ const Body = () => {
 
         {/* to show API data on the page */}
         <div>
-          {isSingleID ? (
-            <h1>Hello World</h1>
-          ) : (
+          {showData ? (
             <>
-              {showData ? (
-                <>
-                  {apiError ? (
-                    <h2 className="text-2xl font-semibold text-gray-500 text-center">
-                      {apiError}
-                    </h2>
-                  ) : (
-                    <div className="py-5">
-                      <div className="dataHead">
-                        <ul className="flex justify-center items-center text-gray-500  text-sm font-semibold">
-                          <li className="w-1/12 px-3">ID</li>
-                          <li className="w-1/12 px-1">Name</li>
-                          <li className="w-1/12 px-1">Date</li>
-                          <li className="w-1/12 px-1">Time</li>
-                          <li className="w-2/12 px-1">Ab Magnitude</li>
-                          <li className="w-2/12 px-2 flex justify-start items-center">
-                            <p>Min - Max Est Diamater</p>
-                            <select
-                              name="diameter"
-                              value={diamater}
-                              onChange={(e) => setDiameter(e.target.value)}
-                              className="p-1 ml-3"
-                            >
-                              <option value="km">Kilo Meters</option>
-                              <option value="meters">Meters</option>
-                              <option value="miles">Miles</option>
-                              <option value="feet">Feets</option>
-                            </select>
-                          </li>
-                          <li className="w-2/12 px-2 flex justify-start items-center">
-                            <p>Relative Velocity</p>
-                            <select
-                              name="velocity"
-                              value={velocity}
-                              onChange={(e) => setVelocity(e.target.value)}
-                              className="p-1 ml-3"
-                            >
-                              <option value="km/s">KM/sec</option>
-                              <option value="km/h">KM/Hour</option>
-                              <option value="miles/h">Miles/Hours</option>
-                            </select>
-                          </li>
-                          <li className="w-1/12 px-1 text-center">Hazard</li>
-                          <li className="w-2/12 px-1 text-center">
-                            Add To Favourite
-                          </li>
-                        </ul>
-                      </div>
+              {apiError ? (
+                <h2 className="text-2xl font-semibold text-gray-500 text-center">
+                  {apiError}
+                </h2>
+              ) : (
+                <div className="py-5">
+                  <div className="dataHead">
+                    <ul className="flex justify-center items-center text-gray-500  text-sm font-semibold">
+                      <li className="w-1/12 px-3">ID</li>
+                      <li className="w-1/12 px-1">Name</li>
+                      <li className="w-1/12 px-1">Date</li>
+                      <li className="w-1/12 px-1">Time</li>
+                      <li className="w-2/12 px-1">Ab Magnitude</li>
+                      <li className="w-2/12 px-2 flex justify-start items-center">
+                        <p>Min - Max Est Diamater</p>
+                        <select
+                          name="diameter"
+                          value={diamater}
+                          onChange={(e) => setDiameter(e.target.value)}
+                          className="p-1 ml-3"
+                        >
+                          <option value="km">Kilo Meters</option>
+                          <option value="meters">Meters</option>
+                          <option value="miles">Miles</option>
+                          <option value="feet">Feets</option>
+                        </select>
+                      </li>
+                      <li className="w-2/12 px-2 flex justify-start items-center">
+                        <p>Relative Velocity</p>
+                        <select
+                          name="velocity"
+                          value={velocity}
+                          onChange={(e) => setVelocity(e.target.value)}
+                          className="p-1 ml-3"
+                        >
+                          <option value="km/s">KM/sec</option>
+                          <option value="km/h">KM/Hour</option>
+                          <option value="miles/h">Miles/Hours</option>
+                        </select>
+                      </li>
+                      <li className="w-1/12 px-1 text-center">Hazard</li>
+                      <li className="w-2/12 px-1 text-center">
+                        Add To Favourite
+                      </li>
+                    </ul>
+                  </div>
 
+                  {isSingleID ? (
+                    <h1>Hello World</h1>
+                  ) : (
+                    <>
                       {apiData.map((data, index) => {
                         const isFav = favorites.some(
                           (fav) => fav.id === data.id
@@ -308,15 +327,16 @@ const Body = () => {
                             isFav={isFav}
                             removeFavAsteriod={() => removeFavAsteriod(data.id)}
                             addFavAsteriod={() => addFavAsteriod(data.id)}
+                            makeSingleId={() => makeSingleId(data.id)}
                           />
                         );
                       })}
-                    </div>
+                    </>
                   )}
-                </>
-              ) : null}
+                </div>
+              )}
             </>
-          )}
+          ) : null}
         </div>
 
         {/* to add favourite asteriods */}
@@ -345,6 +365,7 @@ const Body = () => {
                           id={data.id}
                           name={data.name}
                           removeFavAsteriod={() => removeFavAsteriod(data.id)}
+                          makeSingleId={()=>makeSingleId (data.id)}
                         />
                       );
                     })}
