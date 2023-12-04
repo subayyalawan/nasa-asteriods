@@ -34,7 +34,7 @@ const Signup = () => {
           updateProfile(resp.user, {
             displayName: signUpDetails.name,
           });
-          navigate("/");
+          navigate("/signin");
         })
         .catch((err)=>{
           setSignUpErr(err.message)

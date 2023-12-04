@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import { get } from "./Api";
@@ -7,7 +7,7 @@ import AsteriodDataCard from "./AsteriodDataCard";
 import Favourite from "./Favourite";
 import axios from "axios";
 
-const Body = () => {
+const Body = ({userEmail}) => {
   const [date, setDate] = useState({
     StartDate: "",
     EndDate: "",
@@ -25,7 +25,10 @@ const Body = () => {
   const [velocity, setVelocity] = useState("km/s");
 
   const [isSingleID, setIsSingleID] = useState(false);
-  const [singleID, setSingleID] = useState([]);
+  const [totalLength, setTotalLength] = useState(0);
+  const [searchId, setSearchId] = useState("");
+
+  const searchInputRef = useRef(null);
 
   const validDateRange = () => {
     if (date.StartDate && date.EndDate) {
@@ -47,25 +50,25 @@ const Body = () => {
   };
 
   const fetchApiData = async () => {
-    try {
-      const resp = await axios.get(
-        // `https://api.nasa.gov/neo/rest/v1/feed?start_date=${date.StartDate}&end_date=${date.EndDate}&api_key=LUBRc5fkhGMCDFt1fkCrDBdSdspPwoWlZeGHXfru`
-        `https://api.nasa.gov/neo/rest/v1/feed?start_date=${date.StartDate}&end_date=${date.EndDate}&api_key=5xlaqIKHGj8Ucgg98bDbkfP5vI5p7K5yhYqg0FfO`
-      );
-
-      const combinedData = Object.keys(resp.data.near_earth_objects).reduce(
-        (acc, dateKey) => [...acc, ...resp.data.near_earth_objects[dateKey]],
-        []
-      );
-      // console.log(resp.data.near_earth_objects);
-      // console.log(combinedData);
-      setApiData(combinedData);
-      setIsLoading(false);
-      setShowData(true);
-    } catch (error) {
-      setApiError(error.error_message);
-      setShowData(false);
-    }
+    await axios
+      .get(
+        `https://api.nasa.gov/neo/rest/v1/feed?start_date=${date.StartDate}&end_date=${date.EndDate}&api_key=LUBRc5fkhGMCDFt1fkCrDBdSdspPwoWlZeGHXfru`
+        // `https://api.nasa.gov/neo/rest/v1/feed?start_date=${date.StartDate}&end_date=${date.EndDate}&api_key=5xlaqIKHGj8Ucgg98bDbkfP5vI5p7K5yhYqg0FfO`
+      )
+      .then((resp) => {
+        const combinedData = Object.keys(resp.data.near_earth_objects).reduce(
+          (acc, dateKey) => [...acc, ...resp.data.near_earth_objects[dateKey]],
+          []
+        );
+        setTotalLength(combinedData.length);
+        setApiData(combinedData);
+        setIsLoading(false);
+        setShowData(true);
+      })
+      .catch((err) => {
+        setApiError(err.error_message);
+        setShowData(false);
+      });
   };
 
   useEffect(() => {
@@ -77,24 +80,26 @@ const Body = () => {
   }, [date.StartDate, date.EndDate]);
 
   const favApiFetch = async () => {
-    try {
-      const resp = await axios.get("http://localhost:3500/subayyal");
-      setFavApiData(resp.data);
-      // console.log(favApiData);
-    } catch (error) {
-      console.log(error);
-    }
+    await axios
+      .get(`http://localhost:3500/users/`)
+      .then((resp) => {
+        console.log(resp.data);
+        setFavApiData(resp.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const addFavAsteriod = async (dataID) => {
     const dataToAdd = apiData.find((data) => data.id === dataID);
-    await axios.post("http://localhost:3500/subayyal", dataToAdd);
+    await axios.post(`http://localhost:3500/users`, {userEmail, dataToAdd});
     favApiFetch();
     setFavorites((prevFav) => [...prevFav, dataToAdd]);
   };
 
   const removeFavAsteriod = async (dataID) => {
-    await axios.delete(`http://localhost:3500/subayyal/${dataID}`);
+    await axios.delete(`http://localhost:3500/users/${dataID}`);
     favApiFetch();
     setFavorites((prevFav) => prevFav.filter((fav) => fav.id !== dataID));
   };
@@ -103,26 +108,46 @@ const Body = () => {
     setIsSingleID(true);
     setIsLoading(true);
     fetchSingleIdData(dataID);
-    // setShowData(false);
   };
 
   const fetchSingleIdData = async (dataID) => {
-    try {
-      const resp = await axios.get(
-        // `https://api.nasa.gov/neo/rest/v1/neo/${dataID}?api_key=LUBRc5fkhGMCDFt1fkCrDBdSdspPwoWlZeGHXfru`
-        `https://api.nasa.gov/neo/rest/v1/neo/${dataID}?api_key=5xlaqIKHGj8Ucgg98bDbkfP5vI5p7K5yhYqg0FfO`
-      );
+    await axios
+      .get(
+        `https://api.nasa.gov/neo/rest/v1/neo/${dataID}?api_key=LUBRc5fkhGMCDFt1fkCrDBdSdspPwoWlZeGHXfru`
+        // `https://api.nasa.gov/neo/rest/v1/neo/${dataID}?api_key=5xlaqIKHGj8Ucgg98bDbkfP5vI5p7K5yhYqg0FfO`
+      )
+      .then((resp) => {
+        if (resp.data) {
+          setTotalLength(
+            resp.data?.close_approach_data?.length ||
+              resp.data?.close_approach_data?.length === 0
+          );
+          setApiData(resp.data);
+        }
+        setIsLoading(false);
+        setShowData(true);
+      })
+      .catch((err) => {
+        console.log(err.error_message);
+        setShowData(false);
+      });
+  };
 
-      setSingleID(resp.data);
-      // console.log(singleID.close_approach_data[0].relative_velocity.kilometers_per_second);
-      // console.log(singleID[0].close_approach_data);
-      setIsLoading(false);
-      setShowData(true);
-    } catch (err) {
-      console.log(err.error_message);
-      setShowData(false);
+  const handleSearch = (e) => {
+    e.preventDefault();
+    makeSingleId(searchId);
+  };
+
+  const handleEnterKeyPress = (e) => {
+    if (e.key === "Enter") {
+      // Blur the input to hide the keyboard (optional)
+      handleSearch(e);
     }
   };
+
+  const showDataBasedOnUser = ()=>{
+
+  }
 
   return (
     <>
@@ -130,9 +155,9 @@ const Body = () => {
         {/* For Upper Body with date selector */}
         <div className="upperBody flex justify-between items-center py-5">
           <h2 className="text-2xl font-semibold text-gray-500 capitalize">
-            {apiData.length == 0
+            {totalLength == 0
               ? "Search Nearest Asteriods"
-              : `${apiData.length} Nearest Asteriods as per their closest Approach`}
+              : `${totalLength} Nearest Asteriods as per their closest Approach`}
           </h2>
 
           <form className="flex" onSubmit={(e) => e.preventDefault()}>
@@ -147,6 +172,10 @@ const Body = () => {
                 className="p-3 font-sans font-semibold outline-none rounded border "
                 type="number"
                 placeholder="1234"
+                onChange={(e) => setSearchId(e.target.value)}
+                value={searchId}
+                ref={searchInputRef}
+                onKeyDown={handleEnterKeyPress}
               />
             </div>
 
@@ -264,58 +293,67 @@ const Body = () => {
 
                   {isSingleID ? (
                     <>
-                      {singleID.close_approach_data.map((data, index) => {
-                        const isFav = favorites.some(
-                          (fav) => fav.id === singleID.id
-                        );
-
-                        return (
-                          <AsteriodDataCard
-                            key={index}
-                            id={singleID.id}
-                            name={singleID.name}
-                            date={data.close_approach_date}
-                            time={data.close_approach_date_full}
-                            ab_magnitude={singleID.absolute_magnitude_h}
-                            max_diameter={
-                              diamater === "km"
-                                ? singleID.estimated_diameter.kilometers.estimated_diameter_max
-                                : diamater === "meters"
-                                ? singleID.estimated_diameter.meters.estimated_diameter_max
-                                : diamater === "miles"
-                                ? singleID.estimated_diameter.miles.estimated_diameter_max
-                                : diamater === "feet"
-                                ? singleID.estimated_diameter.feet.estimated_diameter_max
-                                : singleID.estimated_diameter.kilometers.estimated_diameter_max
-                            }
-                            min_diameter={
-                              diamater === "km"
-                                ? singleID.estimated_diameter.kilometers.estimated_diameter_min
-                                : diamater === "meters"
-                                ? singleID.estimated_diameter.meters.estimated_diameter_min
-                                : diamater === "miles"
-                                ? singleID.estimated_diameter.miles.estimated_diameter_min
-                                : diamater === "feet"
-                                ? singleID.estimated_diameter.feet.estimated_diameter_min
-                                : singleID.estimated_diameter.kilometers.estimated_diameter_min
-                            }
-                            rel_velocity={
-                              velocity === "km/s"
-                                ? data.relative_velocity.kilometers_per_second
-                                : velocity === "km/h"
-                                ? data.relative_velocity.kilometers_per_hour
-                                : velocity === "miles/h"
-                                ? data.relative_velocity.miles_per_hour
-                                : data.relative_velocity.kilometers_per_second
-                            }
-                            hazard={singleID.is_potentially_hazardous_asteroid}
-                            isFav={isFav}
-                            removeFavAsteriod={() => removeFavAsteriod(data.id)}
-                            addFavAsteriod={() => addFavAsteriod(data.id)}
-                            makeSingleId={() => makeSingleId(data.id)}
-                          />
-                        );
-                      })}
+                      {apiData.close_approach_data ? (
+                        apiData.close_approach_data.map((data, index) => {
+                          return (
+                            <AsteriodDataCard
+                              key={index}
+                              id={apiData.id}
+                              name={apiData.name}
+                              date={data.close_approach_date}
+                              time={data.close_approach_date_full}
+                              ab_magnitude={apiData.absolute_magnitude_h}
+                              max_diameter={
+                                diamater === "km"
+                                  ? apiData.estimated_diameter.kilometers
+                                      .estimated_diameter_max
+                                  : diamater === "meters"
+                                  ? apiData.estimated_diameter.meters
+                                      .estimated_diameter_max
+                                  : diamater === "miles"
+                                  ? apiData.estimated_diameter.miles
+                                      .estimated_diameter_max
+                                  : diamater === "feet"
+                                  ? apiData.estimated_diameter.feet
+                                      .estimated_diameter_max
+                                  : apiData.estimated_diameter.kilometers
+                                      .estimated_diameter_max
+                              }
+                              min_diameter={
+                                diamater === "km"
+                                  ? apiData.estimated_diameter.kilometers
+                                      .estimated_diameter_min
+                                  : diamater === "meters"
+                                  ? apiData.estimated_diameter.meters
+                                      .estimated_diameter_min
+                                  : diamater === "miles"
+                                  ? apiData.estimated_diameter.miles
+                                      .estimated_diameter_min
+                                  : diamater === "feet"
+                                  ? apiData.estimated_diameter.feet
+                                      .estimated_diameter_min
+                                  : apiData.estimated_diameter.kilometers
+                                      .estimated_diameter_min
+                              }
+                              rel_velocity={
+                                velocity === "km/s"
+                                  ? data.relative_velocity.kilometers_per_second
+                                  : velocity === "km/h"
+                                  ? data.relative_velocity.kilometers_per_hour
+                                  : velocity === "miles/h"
+                                  ? data.relative_velocity.miles_per_hour
+                                  : data.relative_velocity.kilometers_per_second
+                              }
+                              hazard={apiData.is_potentially_hazardous_asteroid}
+                              makeSingleId={() => makeSingleId(apiData.id)}
+                            />
+                          );
+                        })
+                      ) : (
+                        <h3 className="text-2xl font-semibold text-gray-500 text-center">
+                          No close approach data available.
+                        </h3>
+                      )}
                     </>
                   ) : (
                     <>
@@ -420,7 +458,7 @@ const Body = () => {
                     {favApiData.map((data, index) => {
                       return (
                         <Favourite
-                          key={data.id}
+                          key={index}
                           id={data.id}
                           name={data.name}
                           removeFavAsteriod={() => removeFavAsteriod(data.id)}
