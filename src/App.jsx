@@ -8,7 +8,7 @@ import {
   createRoutesFromElements,
 } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
-import Signin from "./components/signin";
+import Signin from "./components/Signin";
 import Layout from "./components/Layout";
 import Signup from "./components/Signup";
 
