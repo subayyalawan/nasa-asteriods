@@ -1,13 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { get } from "./Api";
 import Loader from "../assets/loader.gif";
 import AsteriodDataCard from "./AsteriodDataCard";
 import Favourite from "./Favourite";
 import axios from "axios";
 
-const Body = ({userEmail}) => {
+const Body = ({ userEmail }) => {
   const [date, setDate] = useState({
     StartDate: "",
     EndDate: "",
@@ -20,6 +19,7 @@ const Body = ({userEmail}) => {
 
   const [favApiData, setFavApiData] = useState([]);
   const [favorites, setFavorites] = useState([]);
+  const [matchedData, setMatchedData] = useState([]);
 
   const [diamater, setDiameter] = useState("km");
   const [velocity, setVelocity] = useState("km/s");
@@ -77,14 +77,21 @@ const Body = ({userEmail}) => {
     setTimeout(() => {
       setValidDateError(false);
     }, 3200);
-  }, [date.StartDate, date.EndDate]);
+  }, [date.StartDate, date.EndDate, userEmail]);
 
   const favApiFetch = async () => {
     await axios
       .get(`http://localhost:3500/users/`)
       .then((resp) => {
-        console.log(resp.data);
         setFavApiData(resp.data);
+        setMatchedData(
+          favApiData.filter((data) => {
+            return data.email === userEmail;
+            // console.log(data.email === userEmail);
+          })
+        );
+
+        // console.log(matchedData);
       })
       .catch((err) => {
         console.log(err);
@@ -92,10 +99,14 @@ const Body = ({userEmail}) => {
   };
 
   const addFavAsteriod = async (dataID) => {
-    const dataToAdd = apiData.find((data) => data.id === dataID);
-    await axios.post(`http://localhost:3500/users`, {userEmail, dataToAdd});
+    const favData = apiData.find((data) => data.id === dataID);
+    await axios.post(`http://localhost:3500/users`, {
+      email: userEmail,
+      favData: favData,
+      id: favData?.id,
+    });
     favApiFetch();
-    setFavorites((prevFav) => [...prevFav, dataToAdd]);
+    setFavorites((prevFav) => [...prevFav, favData]);
   };
 
   const removeFavAsteriod = async (dataID) => {
@@ -133,21 +144,12 @@ const Body = ({userEmail}) => {
       });
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    makeSingleId(searchId);
-  };
-
   const handleEnterKeyPress = (e) => {
     if (e.key === "Enter") {
-      // Blur the input to hide the keyboard (optional)
-      handleSearch(e);
+      e.preventDefault();
+      makeSingleId(searchId);
     }
   };
-
-  const showDataBasedOnUser = ()=>{
-
-  }
 
   return (
     <>
@@ -359,8 +361,11 @@ const Body = ({userEmail}) => {
                     <>
                       {apiData.map((data, index) => {
                         const isFav = favorites.some(
-                          (fav) => fav.id === data.id
+                          (fav) => 
+                          fav.id === data.id
+                          // console.log(fav)
                         );
+                        // console.log(isFav);
 
                         return (
                           <AsteriodDataCard
@@ -439,7 +444,7 @@ const Body = ({userEmail}) => {
         {/* to add favourite asteriods */}
         <div>
           <div className="py-4">
-            {favApiData && favApiData.length > 0 ? (
+            {matchedData && matchedData.length > 0 ? (
               <>
                 <h2 className="text-2xl text-gray-500 font-semibold text-center">
                   Favourite Asteriods
@@ -455,12 +460,13 @@ const Body = ({userEmail}) => {
                 </div>
                 <div className="fav-lower">
                   <div className="w-6/12 mx-auto">
-                    {favApiData.map((data, index) => {
+                    {matchedData.map((data, index) => {
+                      // console.log(data.favData.name);
                       return (
                         <Favourite
                           key={index}
-                          id={data.id}
-                          name={data.name}
+                          id={data.favData.id}
+                          name={data.favData.name}
                           removeFavAsteriod={() => removeFavAsteriod(data.id)}
                           makeSingleId={() => makeSingleId(data.id)}
                         />
@@ -478,11 +484,6 @@ const Body = ({userEmail}) => {
               </div>
             )}
           </div>
-
-          {/* <Favourite
-            favApiData={favApiData}
-            removeFavAsteriod={() => removeFavAsteriod()}
-          /> */}
         </div>
       </div>
     </>

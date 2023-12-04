@@ -4,6 +4,7 @@ import { faHeart as heartSolid } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const AsteriodDataCard = (props) => {
+  console.log(props.isFav);
   return (
     <div className="AsteriodsDataCard py-1">
       <ul
