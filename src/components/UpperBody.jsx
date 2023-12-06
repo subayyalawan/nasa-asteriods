@@ -17,7 +17,7 @@ const Body = ({ userEmail }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showData, setShowData] = useState(false);
 
-  const [favApiData, setFavApiData] = useState([]);
+  // const [favApiData, setFavApiData] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [matchedData, setMatchedData] = useState([]);
 
@@ -79,40 +79,37 @@ const Body = ({ userEmail }) => {
     }, 3200);
   }, [date.StartDate, date.EndDate, userEmail]);
 
-  const favApiFetch = async () => {
-    await axios
-      .get(`http://localhost:3500/users/`)
-      .then((resp) => {
-        setFavApiData(resp.data);
-        setMatchedData(
-          favApiData.filter((data) => {
-            return data.email === userEmail;
-            // console.log(data.email === userEmail);
-          })
-        );
-
-        // console.log(matchedData);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
   const addFavAsteriod = async (dataID) => {
+    console.log(dataID);
     const favData = apiData.find((data) => data.id === dataID);
     await axios.post(`http://localhost:3500/users`, {
       email: userEmail,
-      favData: favData,
-      id: favData?.id,
+      asteriodName: favData?.name,
+      asteriodId: favData?.id,
     });
-    favApiFetch();
+    await favApiFetch();
     setFavorites((prevFav) => [...prevFav, favData]);
   };
 
   const removeFavAsteriod = async (dataID) => {
     await axios.delete(`http://localhost:3500/users/${dataID}`);
-    favApiFetch();
-    setFavorites((prevFav) => prevFav.filter((fav) => fav.id !== dataID));
+    await favApiFetch();
+    setFavorites((prevFav) => prevFav.filter((data) => data.id !== dataID));
+  };
+
+  const favApiFetch = async () => {
+    await axios
+      .get(`http://localhost:3500/users/`)
+      .then((resp) => {
+        setMatchedData(
+          resp.data.filter((data) => {
+            return data.email === userEmail;
+          })
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const makeSingleId = (dataID) => {
@@ -361,11 +358,8 @@ const Body = ({ userEmail }) => {
                     <>
                       {apiData.map((data, index) => {
                         const isFav = favorites.some(
-                          (fav) => 
-                          fav.id === data.id
-                          // console.log(fav)
+                          (fav) => fav.id === data.id
                         );
-                        // console.log(isFav);
 
                         return (
                           <AsteriodDataCard
@@ -428,6 +422,7 @@ const Body = ({ userEmail }) => {
                             hazard={data.is_potentially_hazardous_asteroid}
                             isFav={isFav}
                             removeFavAsteriod={() => removeFavAsteriod(data.id)}
+                            // removeFavAsteriod={() => console.log(data.id)}
                             addFavAsteriod={() => addFavAsteriod(data.id)}
                             makeSingleId={() => makeSingleId(data.id)}
                           />
@@ -465,8 +460,8 @@ const Body = ({ userEmail }) => {
                       return (
                         <Favourite
                           key={index}
-                          id={data.favData.id}
-                          name={data.favData.name}
+                          id={data.asteriodId}
+                          name={data.asteriodName}
                           removeFavAsteriod={() => removeFavAsteriod(data.id)}
                           makeSingleId={() => makeSingleId(data.id)}
                         />
