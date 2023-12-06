@@ -303,6 +303,8 @@ const Body = ({ userEmail }) => {
 
                   {isSingleID ? (
                     <>
+
+                    {/* sing id data*/}
                       {apiData.close_approach_data ? (
                         apiData.close_approach_data.map((data, index) => {
                           const isFav = favorites.some(
@@ -374,8 +376,10 @@ const Body = ({ userEmail }) => {
                       )}
                     </>
                   ) : (
+
+
+                    // normal dates Data
                     <>
-                      {/* {favorites.map((fav) => console.log(fav.isFav))} */}
                       {apiData.map((data, index) => {
                         const isFav = favorites.some(
                           (fav) => fav.asteriodId === data.id
@@ -476,7 +480,6 @@ const Body = ({ userEmail }) => {
                 <div className="fav-lower">
                   <div className="w-6/12 mx-auto">
                     {matchedData.map((data, index) => {
-                      // console.log(data.favData.name);
                       return (
                         <Favourite
                           key={index}
@@ -485,7 +488,6 @@ const Body = ({ userEmail }) => {
                           removeFavAsteriod={() =>
                             handleRemoveFav(data.asteriodId)
                           }
-                          // removeFavAsteriod={() => removeFavAsteriod(data.id)}
                           makeSingleId={() => makeSingleId(data.asteriodId)}
                         />
                       );
