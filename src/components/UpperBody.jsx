@@ -89,7 +89,10 @@ const Body = ({ userEmail }) => {
     }, 3200);
   }, [date.StartDate, date.EndDate, userEmail]);
 
-  const addFavAsteriod = async (data) => {
+  const addFavAsteriod = async (data, e) => {
+    if (e) {
+      e.stopPropagation();
+    }
     const dataToAdd = {
       email: userEmail,
       asteriodName: data?.name,
@@ -99,15 +102,18 @@ const Body = ({ userEmail }) => {
     await favApiFetch();
   };
 
-  const handleRemoveFav = (asteriodId) => {
+  const handleRemoveFav = (asteriodId, e) => {
     favApiFetch();
     const matchedVal = matchedData.filter((data) => {
       return data.asteriodId === asteriodId;
     });
-    removeFavAsteriod(matchedVal[0].id);
+    removeFavAsteriod(matchedVal[0].id, e);
   };
 
-  const removeFavAsteriod = async (dataID) => {
+  const removeFavAsteriod = async (dataID, e) => {
+    if (e) {
+      e.stopPropagation();
+    }
     await axios.delete(`http://localhost:3500/users/${dataID}`);
     await favApiFetch();
   };
@@ -366,10 +372,12 @@ const Body = ({ userEmail }) => {
                               }
                               hazard={apiData.is_potentially_hazardous_asteroid}
                               isFav={isFav}
-                              makeSingleId={(e) => makeSingleId(apiData.id)}
-                              addFavAsteriod={() => addFavAsteriod(apiData)}
-                              removeFavAsteriod={() =>
-                                handleRemoveFav(apiData.id)
+                              makeSingleId={() => makeSingleId(apiData.id)}
+                              addFavAsteriod={(event) =>
+                                addFavAsteriod(apiData, event)
+                              }
+                              removeFavAsteriod={(event) =>
+                                handleRemoveFav(apiData.id, event)
                               }
                             />
                           );
@@ -449,8 +457,12 @@ const Body = ({ userEmail }) => {
                             hazard={data.is_potentially_hazardous_asteroid}
                             isFav={isFav}
                             // removeFavAsteriod={() => removeFavAsteriod(data.id)}
-                            removeFavAsteriod={() => handleRemoveFav(data.id)}
-                            addFavAsteriod={() => addFavAsteriod(data)}
+                            removeFavAsteriod={(event) =>
+                              handleRemoveFav(data.id, event)
+                            }
+                            addFavAsteriod={(event) =>
+                              addFavAsteriod(data, event)
+                            }
                             makeSingleId={() => makeSingleId(data.id)}
                           />
                         );
@@ -488,8 +500,8 @@ const Body = ({ userEmail }) => {
                           key={index}
                           id={data.asteriodId}
                           name={data.asteriodName}
-                          removeFavAsteriod={() =>
-                            handleRemoveFav(data.asteriodId)
+                          removeFavAsteriod={(event) =>
+                            handleRemoveFav(data.asteriodId, event)
                           }
                           makeSingleId={() => makeSingleId(data.asteriodId)}
                         />

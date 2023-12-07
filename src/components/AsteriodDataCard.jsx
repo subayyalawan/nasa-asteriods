@@ -10,9 +10,11 @@ const AsteriodDataCard = (props) => {
       <ul
         className="flex justify-between py-3 bg-white hover:bg-blue-300 text-sm font-normal text-gray-800 border-gray-800 border border-opacity-30
        shadow-sm cursor-pointer"
-        //  onClick={props.makeSingleId}
+         onClick={props.makeSingleId}
       >
-        <li className="w-1/12 px-3" onClick={props.makeSingleId}>
+        <li className="w-1/12 px-3" 
+        // onClick={props.makeSingleId}
+        >
           {props.id}
         </li>
         <li className="w-1/12 px-1">{props.name}</li>
