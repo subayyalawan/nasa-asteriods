@@ -32,8 +32,14 @@ const Body = ({ userEmail }) => {
 
   const validDateRange = () => {
     if (date.StartDate && date.EndDate) {
+      // &&date.EndDate >= date.StartDate
       const startDate = new Date(date.StartDate);
       const endDate = new Date(date.EndDate);
+      if (endDate < startDate) {
+        setValidDateError(true);
+        setShowData(false);
+        return;
+      }
       const timeDifference = Math.abs(endDate - startDate);
       const daysDifference = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
       if (daysDifference <= 7) {
@@ -46,6 +52,10 @@ const Body = ({ userEmail }) => {
         setValidDateError(true);
         setShowData(false);
       }
+    } else if(date.EndDate) {
+      setValidDateError(true);
+      setShowData(false);
+      return;
     }
   };
 
@@ -79,7 +89,9 @@ const Body = ({ userEmail }) => {
     }, 3200);
   }, [date.StartDate, date.EndDate, userEmail]);
 
-  const addFavAsteriod = async (data) => {
+  const addFavAsteriod = async (data, e) => {
+    e.stopPropagation();
+
     // console.log(data);
     const dataToAdd = {
       email: userEmail,
@@ -93,7 +105,9 @@ const Body = ({ userEmail }) => {
     // console.log(favorites);
   };
 
-  const handleRemoveFav = (asteriodId) => {
+  const handleRemoveFav = (asteriodId, e) => {
+    e.stopPropagation();
+
     favApiFetch();
     const matchedVal = matchedData.filter((data) => {
       return data.asteriodId === asteriodId;
@@ -123,7 +137,8 @@ const Body = ({ userEmail }) => {
       });
   };
 
-  const makeSingleId = (dataID) => {
+  const makeSingleId = (dataID, e) => {
+    e.stopPropagation();
     setIsSingleID(true);
     setIsLoading(true);
     fetchSingleIdData(dataID);
@@ -303,8 +318,7 @@ const Body = ({ userEmail }) => {
 
                   {isSingleID ? (
                     <>
-
-                    {/* sing id data*/}
+                      {/* sing id data*/}
                       {apiData.close_approach_data ? (
                         apiData.close_approach_data.map((data, index) => {
                           const isFav = favorites.some(
@@ -363,9 +377,11 @@ const Body = ({ userEmail }) => {
                               }
                               hazard={apiData.is_potentially_hazardous_asteroid}
                               isFav={isFav}
-                              makeSingleId={() => makeSingleId(apiData.id)}
+                              makeSingleId={(e) => makeSingleId(apiData.id)}
                               addFavAsteriod={() => addFavAsteriod(apiData)}
-                              removeFavAsteriod={() => handleRemoveFav(apiData.id)}
+                              removeFavAsteriod={() =>
+                                handleRemoveFav(apiData.id)
+                              }
                             />
                           );
                         })
@@ -376,8 +392,6 @@ const Body = ({ userEmail }) => {
                       )}
                     </>
                   ) : (
-
-
                     // normal dates Data
                     <>
                       {apiData.map((data, index) => {
