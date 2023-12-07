@@ -52,7 +52,7 @@ const Body = ({ userEmail }) => {
         setValidDateError(true);
         setShowData(false);
       }
-    } else if(date.EndDate) {
+    } else if (date.EndDate) {
       setValidDateError(true);
       setShowData(false);
       return;
@@ -89,30 +89,21 @@ const Body = ({ userEmail }) => {
     }, 3200);
   }, [date.StartDate, date.EndDate, userEmail]);
 
-  const addFavAsteriod = async (data, e) => {
-    e.stopPropagation();
-
-    // console.log(data);
+  const addFavAsteriod = async (data) => {
     const dataToAdd = {
       email: userEmail,
       asteriodName: data?.name,
       asteriodId: data?.id,
     };
-    console.log(dataToAdd);
     await axios.post(`http://localhost:3500/users`, dataToAdd);
     await favApiFetch();
-    // setFavorites((prevData) => [...prevData, dataToAdd]);
-    // console.log(favorites);
   };
 
-  const handleRemoveFav = (asteriodId, e) => {
-    e.stopPropagation();
-
+  const handleRemoveFav = (asteriodId) => {
     favApiFetch();
     const matchedVal = matchedData.filter((data) => {
       return data.asteriodId === asteriodId;
     });
-    // setFavorites((prevFav) => prevFav.filter((data) => data.asteriodId !== asteriodId));
     removeFavAsteriod(matchedVal[0].id);
   };
 
@@ -130,15 +121,13 @@ const Body = ({ userEmail }) => {
         });
         setMatchedData(fetchedData);
         setFavorites(fetchedData);
-        // console.log(favorites);
       })
       .catch((err) => {
         console.log(err);
       });
   };
 
-  const makeSingleId = (dataID, e) => {
-    e.stopPropagation();
+  const makeSingleId = (dataID) => {
     setIsSingleID(true);
     setIsLoading(true);
     fetchSingleIdData(dataID);
